@@ -8,11 +8,17 @@
       content="A simple choose your own adventure game."
     />
     <title>My Choose-Your-Own Adventure!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Arbutus&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Chango&display=swap" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="styles.css" />
     <base href="./" />
   </head>
   <body>
-    <h1>My Interactive Design</h1>
+    <h1>NBA Teams Best Players</h1>
+    <!-- Sound control: mute / unmute -->
+    <button id="sound-toggle" aria-pressed="false" title="Toggle sound">🔊 Sound</button>
+    <!-- Example button to show how to click a card -->
+    <button id="example-button" title="See an example">👆 Example</button>
   <!-- Column of 30 flippable cards centered on the page -->
   <main>
     <section class="cards-container" aria-label="List of teams and players">
@@ -33,6 +39,12 @@
       </div>
     </section>
   </main>
+
+  <!-- Centered large team name shown behind the cards when a card is clicked -->
+  <div id="center-team-name" aria-hidden="true"></div>
+
+  <!-- Instruction text that fades in on page load and fades out on first card click -->
+  <div id="instruction-text">Click a team to see who the best player is</div>
 
   
     <hr />

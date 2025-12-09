@@ -10,21 +10,108 @@ html, body {
 h1 {
 	text-align: center;
 	margin: 24px 0;
+	font-family: 'Arbutus', serif;
+}
+
+/* Sound toggle button in the header */
+#sound-toggle {
+	position: absolute;
+	top: 12px;
+	right: 18px;
+	background: #ffffff;
+	border: 1px solid rgba(17,24,39,0.06);
+	padding: 8px 12px;
+	border-radius: 8px;
+	font-weight: 700;
+	cursor: pointer;
+	font-family: 'Chango', cursive;
+}
+
+#sound-toggle[aria-pressed="true"] {
+	background: #111827;
+	color: #fff;
+}
+
+/* Example button in the header */
+#example-button {
+	position: absolute;
+	/* place below the sound button and align on the same right column */
+	top: 56px;
+	right: 18px;
+	background: #ffffff;
+	border: 1px solid rgba(17,24,39,0.06);
+	padding: 8px 12px;
+	border-radius: 8px;
+	font-weight: 700;
+	cursor: pointer;
+	font-family: 'Chango', cursive;
+}
+
+#example-button:hover {
+	background: #f3f4f6;
+}
+
+/* Animated cursor pointer */
+.cursor-pointer {
+	position: fixed;
+	pointer-events: none;
+	z-index: 9999;
+	font-size: 2rem;
+	animation: clickAnimation 2s ease-in-out forwards;
+}
+
+@keyframes clickAnimation {
+	0% {
+		transform: scale(1) translate(0, 0);
+		opacity: 1;
+	}
+	50% {
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0.8) translate(0, 20px);
+		opacity: 0;
+	}
+}
+
+/* Click press animation - scales down when clicking */
+@keyframes clickPress {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(0.7);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+.cursor-pointer.clicking {
+	animation: clickPress 0.3s ease-in-out;
 }
 
 /* Container that holds the vertical list of cards */
 .cards-container {
 	display: flex;
-	justify-content: center; /* center horizontally */
-	padding: 8px 16px 48px;
+    /* align the column to the left instead of centered */
+    justify-content: flex-start;
+ 	/* add extra left padding so cards aren't flush against the viewport */
+ 	padding: 8px 16px 48px 40px;
+}
+
+/* Ensure the cards sit above the centered team-name display */
+.cards-container {
+    position: relative;
+    z-index: 2;
 }
 
 .cards-list {
-	/* keep the column narrow and centered */
+    /* keep the column narrow; align items to the left */
 	width: 320px;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
+	align-items: flex-start;
 	gap: 14px;
 	/* allow scrolling if the column is taller than the viewport */
 	max-height: calc(100vh - 160px);
@@ -37,6 +124,10 @@ h1 {
 	width: 100%;
 	max-width: 320px;
 	perspective: 1000px; /* Enables 3D space for children */
+	/* allow a small hover transform without affecting the inner flip */
+	transition: transform 160ms ease;
+	transform-origin: center;
+	position: relative; /* allow z-index isolation when popping above other cards */
 }
 
 .card-inner {
@@ -49,6 +140,42 @@ h1 {
 	box-shadow: 0 6px 18px rgba(17, 24, 39, 0.08);
 	cursor: pointer;
 	background: transparent;
+}
+
+/* Shrink the outer card slightly on hover or keyboard focus. */
+.card:hover, .card:focus-within {
+	transform: scale(0.985);
+}
+
+/* When the list is dimmed, keep the hover/focus shrink and make the
+   hovered card visually pop by restoring its inner opacity and raising z-index. */
+.cards-list.dim-all .card:hover,
+.cards-list.dim-all .card:focus-within {
+	transform: scale(0.985);
+	z-index: 3;
+}
+
+.cards-list.dim-all .card:hover .card-inner,
+.cards-list.dim-all .card:focus-within .card-inner {
+	opacity: 1;
+	transition: opacity 160ms ease, transform 160ms ease;
+}
+
+/* Ensure a card that has been clicked (flipped) stays dim when the
+   list is in the dimmed state. This prevents the opened card from
+   regaining full opacity on hover. */
+.cards-list.dim-all .card.flipped .card-inner,
+.cards-list.dim-all .card.flipped:hover .card-inner,
+.cards-list.dim-all .card.flipped:focus-within .card-inner {
+	opacity: 0.22;
+	transition: opacity 160ms ease;
+}
+
+/* When the list gets the .dim-all class, make all cards semi-transparent
+   but still visible and interactive. This keeps clicks/keyboard working. */
+.cards-list.dim-all .card-inner {
+    opacity: 0.22;
+    transition: opacity 200ms ease, transform 0.6s;
 }
 
 /* When the card container gets the flipped class, rotate the inner */
@@ -102,3 +229,77 @@ h1 {
 	box-shadow: 0 12px 28px rgba(17, 24, 39, 0.12);
 }
 
+/* Large centered team name displayed behind the cards */
+#center-team-name {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	text-align: center;
+	white-space: nowrap;
+	pointer-events: none; /* clicks pass through */
+	opacity: 0;
+	transition: opacity 200ms ease;
+	z-index: 1; /* behind the .cards-container */
+	font-size: clamp(28px, 8vw, 120px);
+	color: rgba(0, 0, 0, 0.06);
+	font-family: 'Arbutus', serif;
+}
+
+#center-team-name .center-team-title {
+	display: block;
+	line-height: 1;
+}
+
+
+#center-team-name .center-player-label {
+	display: block;
+	font-weight: 700;
+	margin-bottom: 0.4rem;
+	font-size: 0.28em; /* smaller than the large team title */
+	opacity: 0.95;
+}
+
+/* Instruction text that fades in on page load */
+#instruction-text {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 2.5rem;
+	font-weight: 500;
+	color: #111;
+	text-align: center;
+	pointer-events: none;
+	opacity: 0;
+	animation: fadeIn 1.5s ease-in-out forwards;
+	z-index: 1;
+}
+
+/* Fade in animation on page load */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 0.8;
+	}
+}
+
+/* Fade out animation when clicked */
+#instruction-text.hidden {
+	animation: fadeOut 1s ease-in-out forwards;
+}
+
+/* Fade out animation */
+@keyframes fadeOut {
+	from {
+		opacity: 0.8;
+	}
+	to {
+		opacity: 0;
+	}
+}
