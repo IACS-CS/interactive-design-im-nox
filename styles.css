@@ -1,0 +1,104 @@
+/* Center the page content a little and set a neutral background */
+html, body {
+	height: 100%;
+	margin: 0;
+	font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+	background: #f6f7fb;
+	color: #111;
+}
+
+h1 {
+	text-align: center;
+	margin: 24px 0;
+}
+
+/* Container that holds the vertical list of cards */
+.cards-container {
+	display: flex;
+	justify-content: center; /* center horizontally */
+	padding: 8px 16px 48px;
+}
+
+.cards-list {
+	/* keep the column narrow and centered */
+	width: 320px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 14px;
+	/* allow scrolling if the column is taller than the viewport */
+	max-height: calc(100vh - 160px);
+	overflow: auto;
+	padding: 12px;
+}
+
+/* Each card provides the 3D context */
+.card {
+	width: 100%;
+	max-width: 320px;
+	perspective: 1000px; /* Enables 3D space for children */
+}
+
+.card-inner {
+	width: 100%;
+	height: 120px;
+	position: relative;
+	transition: transform 0.6s;
+	transform-style: preserve-3d; /* keep 3d children when transforming */
+	border-radius: 10px;
+	box-shadow: 0 6px 18px rgba(17, 24, 39, 0.08);
+	cursor: pointer;
+	background: transparent;
+}
+
+/* When the card container gets the flipped class, rotate the inner */
+.card.flipped .card-inner {
+	transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+	position: absolute;
+	inset: 0; /* top:0; right:0; bottom:0; left:0 */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	backface-visibility: hidden; /* hide the mirrored face */
+	border-radius: 10px;
+	font-weight: 600;
+	font-size: 18px;
+}
+
+.card-front {
+	background: linear-gradient(180deg, #fff 0%, #f3f4f6 100%);
+	color: #0b3d91; /* team color */
+}
+
+.card-back {
+	background: linear-gradient(180deg, #0b3d91 0%, #0a3a84 100%);
+	color: #fff;
+	transform: rotateY(180deg); /* start rotated so front shows */
+}
+
+/* Team logo styling: keep logos centered and constrained */
+.team-logo {
+	display: block;
+	max-width: 68%;
+	max-height: 68%;
+	width: auto;
+	height: auto;
+	object-fit: contain;
+	margin: 0 auto;
+}
+
+/* Make the text a bit smaller on narrow screens */
+@media (max-width: 380px) {
+	.card-inner { height: 100px; }
+	.card-front, .card-back { font-size: 16px; }
+}
+
+/* Simple focus styles for accessibility */
+.card:focus-within .card-inner, .card:hover .card-inner {
+	box-shadow: 0 12px 28px rgba(17, 24, 39, 0.12);
+}
+
